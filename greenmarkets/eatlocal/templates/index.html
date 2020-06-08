@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Eat Local</title>
+    </head>
+    <body>
+        <h1>Input link to recipe</h1>
+        <form action="" method="get" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.url.label }}<br>
+                {{ form.url(size=32) }}
+            </p>          
+            <p>{{ form.submit() }}</p>
+        </form>
+
+    </body>
+</html>
