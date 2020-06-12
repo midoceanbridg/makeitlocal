@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
-from . import science
+from . import localeats_twostage
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a'
@@ -12,15 +12,17 @@ app.config['SECRET_KEY'] = 'a'
 @app.route('/')
 def index():
     form = GetRecipeForm(request.args)
-    theurl = request.args.get(form.url.name)    
+    theurl = request.args.get(form.url.name) 
+    allout = None   
     if theurl:
-        response = science.request_comparison(theurl)
-        vec, features, recipes, fmproducts = science.load_data()
-        new_features, percent = science.input_to_data(response, vec, fmproducts)
-        similar = science.fetch_similar(new_features, features, vec, recipes, percent)
-        return f'Your recipe is {percent} % local, Similar recipes: {similar}'   
+        ingredients = localeats_twostage.request_comparison(theurl)
+        w2vm, aisledict, noise, atFM, FMinfo = localeats_twostage.load_data()
+        noise_free_ing = localeats_twostage.removenoise(ingredients, noise)
+        allout = localeats_twostage.rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo)
+        
 
-    return render_template("index.html", form=form)
+        
+    return render_template("index.html", form=form, allout=allout)
 
 
 

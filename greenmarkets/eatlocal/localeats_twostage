@@ -1,0 +1,6 @@
+import requests
+from sklearn.manifold import TSNE
+import pickle
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+import numpy as np
