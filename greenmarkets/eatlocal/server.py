@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired
 
 from . import localeats_twostage
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'a'
 
 
