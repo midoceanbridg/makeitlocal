@@ -1,4 +1,5 @@
-eastlocal/templates/*
+generated_data/*
+eatlocal/templates/*
 eatlocal/static/*
 juneveggies.txt
 apikey.txt
