@@ -22,7 +22,7 @@ def index():
         
 
         
-    return render_template("index.html", form=form, allout=allout)
+    return render_template("indexmountain.html", form=form, allout=allout)
 
 
 
