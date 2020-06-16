@@ -5,14 +5,25 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
 from fuzzywuzzy import fuzz, process
+from functools import lru_cache
 
+
+@lru_cache()
 def load_data():
-    w2vm = pickle.load(open("../bigoven/w2vmodel.pkl", 'rb'))
-    aisledict = pickle.load(open("../bigoven/aisleclassification.pkl", 'rb'))
-    noise = pickle.load(open("../bigoven/noiselist.pkl", 'rb'))
-    atFM = pickle.load(open("../bigoven/FMproducts.pkl", 'rb'))
-    FMinfo = pickle.load(open("../bigoven/FMfull.pkl", 'rb'))
-    return w2vm, aisledict, noise, atFM, FMinfo
+    w2vm = pickle.load(open("../generated_data/model_w2v.pkl", 'rb')) #
+    aisledict = pickle.load(open("../generated_data/ingredient_aisle.pkl", 'rb')) #
+    noise = pickle.load(open("../generated_data/noiselist.pkl", 'rb')) #
+    atFM = pickle.load(open("../generated_data/FMproducts.pkl", 'rb')) #
+    FMinfo = pickle.load(open("../generated_data//FMfull.pkl", 'rb')) #
+    ingvect = pickle.load(open("../generated_data/tfidfvect_ingredients.pkl", 'rb')) #
+    fullnningredients = pickle.load(open("../generated_data/cleaned_ingredients.pkl", 'rb'))
+    fulling = []
+    fulling.extend([', '.join(n) for n in fullnningredients])
+
+    recvect = pickle.load(open("../generated_data/tfidfvect_recipes.pkl", 'rb'))
+    recdoc = pickle.load(open("../generated_data/full_recipedoc.pkl", 'rb'))
+
+    return w2vm, aisledict, noise, atFM, FMinfo, ingvect, fulling, recvect, recdoc
 
 def request_comparison(userinput):
     mykey = open('../spoonac/apikey.txt').read().strip()
@@ -21,7 +32,10 @@ def request_comparison(userinput):
     rec = response.json()
     ingcomp = rec['extendedIngredients']
     ingredients = [','.join([ing['name'].lower() for ing in ingcomp if ing['name'] ])]
-    return ingredients[0]
+    
+    cur_rec = [rec['title'] + ' ' + ingredients[0] + ' ' + rec['instructions']]
+    
+    return ingredients[0], cur_rec
 
 def removenoise(ingredients, noise): #call on ingredients[0]
     noise_free_ing = []
@@ -41,9 +55,13 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
         'spices': False, #true if spice/seasoning
         'spice_businesses': None,
         'match': None,
+        'similar_vendor': None,
         'try_fresh': None,
-        'store_match': None
+        'store_hasreplacement': None,
+        'cos_sim': None #this is defined in the validation call
     }
+    
+    wheretoshop = {}
 
     allout = []
 
@@ -58,6 +76,17 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
             thisout['where_available'] = thebiz
         # print(f'{i} is available at {thebiz} ')
             
+            found = False
+            for vendor in thisout['where_available']:
+                if vendor in wheretoshop:
+                    wheretoshop[vendor].append(thisout['ingredient'])
+                    found = True
+                    break
+            if not found:
+                wheretoshop[thisout['where_available'][0]] = [thisout['ingredient']] 
+            
+
+
         else:
             #these are unavailable ingredients
             curaisle = aisledict.get(i)
@@ -86,7 +115,15 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
                 #print(f'Dried Spices and and seasonings are rare, you may have this in your pantry, otherwise get fresh ones at: {thebiz}\n')
                 thisout['spices'] = True
                 thisout['spice_businesses'] = thebiz
+                
+                # if thebiz[0] not in wheretoshop:    
+                #     wheretoshop[thebiz[0]] = ['SPICETIME']
+                # elif 'SPICETIME' not in wheretoshop[thebiz[0]]:
+                #     wheretoshop[thebiz[0]].append('SPICETIME')
+                    
+                
                 continue
+                
                 
             # here is thing our algorithm thinks is similar and IS available
             item = []
@@ -98,6 +135,20 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
                         break
             #print(f'Here is the item our algorithm thinks is most similar and is available: {item}\n')
             thisout['match'] = item
+            matchaisle = FMinfo.loc[FMinfo['TYPES OF PRODUCTS AVAILABLE'].str.contains(ophighest[0])]
+            thebiz = matchaisle['BUSINESS NAME'].tolist()
+            thisout['store_hasreplacement'] = thebiz
+            
+            found = False
+            for vendor in thisout['store_hasreplacement']:
+                if vendor in wheretoshop:
+                    wheretoshop[vendor].append(thisout['match'][0])
+                    found = True
+                    break
+            if not found:
+                wheretoshop[thisout['store_hasreplacement'][0]] = [thisout['match'][0]] 
+            
+            
             
             # if it is something usually prepackaged, suggest making it fresh
             if curaisle[0] == 'Pasta and Rice' or curaisle[0] == 'Canned and Jarred':
@@ -107,6 +158,8 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
                         trythis = sim[0]
                         thisout['try_fresh'] = trythis
                         continue
+                    
+                    
                 #print(f'Canned/Jarred items are rare at the Market, but you can make this fresh using {trythis}\n')
                 
                     
@@ -115,9 +168,47 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
                 matchaisle = FMinfo.loc[FMinfo['aisles'] == curaisle[0].lower()]
                 thebiz = matchaisle['BUSINESS NAME'].tolist()
             # print(f'This list of vendors often has products similar to {i}, try asking them: {thebiz}\n')
-                thisout['store_match'] = thebiz
+                if len(thebiz) > 0:
+                    thisout['similar_vendor'] = thebiz
 
 
 
         allout.append(thisout)
-    return allout    
+    return allout, wheretoshop
+
+def validationstep(allout, fulling, ingvect, recvect, recdoc, cur_rec):
+
+    initinglist = []
+    thingstoremove = []
+    thingstoadd = []
+    for out in allout:
+        initinglist.append(out['ingredient'])
+        if out['where_available'] is None:
+            thingstoremove.append(out['ingredient'])
+            thingstoadd.append(out['match'][0])
+
+
+    for rem, add in zip(thingstoremove, thingstoadd):
+        newlist = initinglist.copy()
+        newlist.remove(rem)
+        newlist.append(add)
+
+     
+        #now based on ingredients alone find the most similar recipe we know
+        newlistj = [', '.join(newlist)]
+        ingredientfeatures = ingvect.transform(fulling)
+        nsf = ingvect.transform(newlistj)
+        cosine_similarities = linear_kernel(nsf, ingredientfeatures).flatten()
+        related_rec_index = cosine_similarities.argsort()[-1]
+        
+
+        #now find out, based on more features, how similar these two recipes are
+        recfeatures = recvect.transform(recdoc)
+        currecfeat = recvect.transform(cur_rec)
+        recipe_similarity = linear_kernel(currecfeat, recfeatures[related_rec_index]).flatten()
+        
+        for out in allout:
+            if out['ingredient'] == rem:
+                out['cos_sim'] = recipe_similarity
+       
+            
