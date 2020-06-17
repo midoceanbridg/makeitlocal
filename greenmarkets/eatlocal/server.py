@@ -17,10 +17,10 @@ def index():
     wheretoshop = None
     if theurl:
        ingredients, cur_rec = localeats_twostage.request_comparison(theurl)
-       w2vm, aisledict, noise, atFM, FMinfo, ingvect, fulling, recvect, recdoc = localeats_twostage.load_data()
+       w2vm, aisledict, noise, atFM, FMinfo, ingvect, ingfeatures, fulling, recvect, recfeatures, recdoc = localeats_twostage.load_data()
        noise_free_ing = localeats_twostage.removenoise(ingredients, noise)
        allout, wheretoshop = localeats_twostage.rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo)
-       localeats_twostage.validationstep(allout, fulling, ingvect, recvect, recdoc, cur_rec) 
+       localeats_twostage.validationstep(allout, fulling, ingvect, ingfeatures, recvect, recfeatures, recdoc, cur_rec) 
 
         
     return render_template("indexmountain.html.j2", form=form, allout=allout, wheretoshop=wheretoshop)

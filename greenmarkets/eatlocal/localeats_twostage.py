@@ -16,14 +16,16 @@ def load_data():
     atFM = pickle.load(open("../generated_data/FMproducts.pkl", 'rb')) #
     FMinfo = pickle.load(open("../generated_data//FMfull.pkl", 'rb')) #
     ingvect = pickle.load(open("../generated_data/tfidfvect_ingredients.pkl", 'rb')) #
+    ingfeatures = pickle.load(open("../generated_data/features_ingredients.pkl", 'rb'))
     fullnningredients = pickle.load(open("../generated_data/cleaned_ingredients.pkl", 'rb'))
     fulling = []
     fulling.extend([', '.join(n) for n in fullnningredients])
 
     recvect = pickle.load(open("../generated_data/tfidfvect_recipes.pkl", 'rb'))
     recdoc = pickle.load(open("../generated_data/full_recipedoc.pkl", 'rb'))
+    recfeatures = pickle.load(open("../generated_data/features_recipes.pkl", 'rb'))
 
-    return w2vm, aisledict, noise, atFM, FMinfo, ingvect, fulling, recvect, recdoc
+    return w2vm, aisledict, noise, atFM, FMinfo, ingvect, ingfeatures, fulling, recvect, recfeatures, recdoc
 
 def request_comparison(userinput):
     mykey = open('../spoonac/apikey.txt').read().strip()
@@ -176,7 +178,7 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
         allout.append(thisout)
     return allout, wheretoshop
 
-def validationstep(allout, fulling, ingvect, recvect, recdoc, cur_rec):
+def validationstep(allout, fulling, ingvect, ingfeatures, recvect, recfeatures, recdoc, cur_rec):
 
     initinglist = []
     thingstoremove = []
@@ -196,14 +198,12 @@ def validationstep(allout, fulling, ingvect, recvect, recdoc, cur_rec):
      
         #now based on ingredients alone find the most similar recipe we know
         newlistj = [', '.join(newlist)]
-        ingredientfeatures = ingvect.transform(fulling)
         nsf = ingvect.transform(newlistj)
-        cosine_similarities = linear_kernel(nsf, ingredientfeatures).flatten()
+        cosine_similarities = linear_kernel(nsf, ingfeatures).flatten()
         related_rec_index = cosine_similarities.argsort()[-1]
         
 
         #now find out, based on more features, how similar these two recipes are
-        recfeatures = recvect.transform(recdoc)
         currecfeat = recvect.transform(cur_rec)
         recipe_similarity = linear_kernel(currecfeat, recfeatures[related_rec_index]).flatten()
         
