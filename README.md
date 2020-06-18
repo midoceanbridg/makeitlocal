@@ -1,5 +1,17 @@
 # The Local Host
-This project was created during my time at Insight (https://insightfellows.com/data-science).
+*This project was created during my time at Insight (https://insightfellows.com/data-science).*
+
+The aim of this project is to make it easier for users to do the majority of their shopping & meal planning via NYC farmers markets. 
+
+__You can view the website at www.makeitlocal.nyc__ 
+
+Users input a link to a recipe they want to make, and my code:
+*  Uses NLP tools to assess
+ * If the ingredient is available locally
+ * If not, replace it with a suitable local substitute
+* Validates (also) using NLP that the substitute is reasonable
+* Provides a farmers market specific grocery list.
+
 
 Inside greenmarkets/ you will find the following files:
 
@@ -16,6 +28,8 @@ Inside greenmarkets/ you will find the following files:
   * uses W2V modeling to swap out ingredients where necessary
   * uses TD-IDF & Cosine Similarity to validate
   * Outputs new ingredient list
+
+
 
 Inside greenmarkets/eatlocal
 * The Dockerfile and requirements necessary to put on AWS
