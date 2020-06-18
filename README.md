@@ -1,7 +1,7 @@
 # The Local Host
 This project was created during my time at Insight (https://insightfellows.com/data-science).
 
-It includes the following files
+Inside greenmarkets/ you will find the following files:
 
 * __0_fetch_bigovenapi.ipynb__ a notebook for saving recipes from the BigOven API
   * You will need your own BigOven API key to run this file
@@ -17,3 +17,10 @@ It includes the following files
   * uses TD-IDF & Cosine Similarity to validate
   * Outputs new ingredient list
 
+Inside greenmarkets/eatlocal
+* The Dockerfile and requirements necessary to put on AWS
+
+Inside greenmarkets/eatlocal/thelocalhost
+* __localeats_twostage.py__ Which is essentially the same as the __production_notebook__ described above
+* __app.py__ Which calls the __localeats_twostage.py__ file
+* Templates & items to make the website less ugly
