@@ -35,6 +35,6 @@ Inside greenmarkets/eatlocal
 * The Dockerfile and requirements necessary to put on AWS
 
 Inside greenmarkets/eatlocal/thelocalhost
-* __localeats_twostage.py__ Which is essentially the same as the __production_notebook__ described above
+* __localeats_twostage.py__ which is essentially the same as the __production_notebook__ described above
 * __app.py__ Which calls the __localeats_twostage.py__ file
 * Templates & items to make the website less ugly
