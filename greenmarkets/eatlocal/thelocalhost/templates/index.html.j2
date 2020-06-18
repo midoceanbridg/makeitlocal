@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>The Local Host</title>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>The Local Host</h1>
+        <h2>Eating locally never felt so natural</h2>
+        <h3>Input link to recipe</h3>
+        <form action="" method="get" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.url.label }}<br>
+                {{ form.url(size=32) }}
+            </p>          
+            <p>{{ form.submit() }}</p>
+        </form>
+        {% if allout %} 
+
+            {% for out in allout %}
+            <p> 
+            {{ out['ingredient'] }}
+            <br/>
+            {%if out['unknown'] %}
+            This ingredient is new to us! Sorry! We're learning all the time
+            {% endif %}
+            
+            {% if out['where_available'] %}
+            is available at
+            {{ out['where_available'] }}
+            {% endif %}
+            
+            {% if out['baking'] %}
+            is a baking product that is likely in your pantry
+            {% endif %}
+
+            {% if out['spices'] %}
+            Dried Spices and and seasonings are rare, 
+            you may have this in your pantry, otherwise
+            check out the fresh herbs at:
+            {{ out['spice_business'] }}
+            {% endif %}
+
+            {% if out['match'] %}
+            Here is the item our algorithm thinks is 
+            most similar and is available: 
+            {{ out['match'] }}
+            {% endif %}
+
+            {% if out['try_fresh'] %}
+            Canned/Jarred items are rare at the Market, 
+            but you can make this fresh using 
+            {{ out['try_fresh'] }}
+            {% endif %}
+
+            {% if out['store_match'] %}
+            <br/>
+            This list of vendors often has products similar to
+             {{ out['ingredient'] }} 
+             try asking: {{ out['store_match']}}
+             {% endif %}
+
+
+            </p>
+            {% endfor %}
+
+        
+        {% endif %}
+        
+    </body>
+</html>

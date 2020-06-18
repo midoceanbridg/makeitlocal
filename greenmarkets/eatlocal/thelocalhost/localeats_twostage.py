@@ -1,34 +1,35 @@
 import requests
-from sklearn.manifold import TSNE
 import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
 from fuzzywuzzy import fuzz, process
 from functools import lru_cache
+import os
 
+GENDIR = os.environ['LH_GENDIR'] 
 
 @lru_cache()
 def load_data():
-    w2vm = pickle.load(open("../generated_data/model_w2v.pkl", 'rb')) #
-    aisledict = pickle.load(open("../generated_data/ingredient_aisle.pkl", 'rb')) #
-    noise = pickle.load(open("../generated_data/noiselist.pkl", 'rb')) #
-    atFM = pickle.load(open("../generated_data/FMproducts.pkl", 'rb')) #
-    FMinfo = pickle.load(open("../generated_data//FMfull.pkl", 'rb')) #
-    ingvect = pickle.load(open("../generated_data/tfidfvect_ingredients.pkl", 'rb')) #
-    ingfeatures = pickle.load(open("../generated_data/features_ingredients.pkl", 'rb'))
-    fullnningredients = pickle.load(open("../generated_data/cleaned_ingredients.pkl", 'rb'))
+    w2vm = pickle.load(open(f"{GENDIR}/model_w2v.pkl", 'rb')) #
+    aisledict = pickle.load(open(f"{GENDIR}/ingredient_aisle.pkl", 'rb')) #
+    noise = pickle.load(open(f"{GENDIR}/noiselist.pkl", 'rb')) #
+    atFM = pickle.load(open(f"{GENDIR}/FMproducts.pkl", 'rb')) #
+    FMinfo = pickle.load(open(f"{GENDIR}//FMfull.pkl", 'rb')) #
+    ingvect = pickle.load(open(f"{GENDIR}/tfidfvect_ingredients.pkl", 'rb')) #
+    ingfeatures = pickle.load(open(f"{GENDIR}/features_ingredients.pkl", 'rb'))
+    fullnningredients = pickle.load(open(f"{GENDIR}/cleaned_ingredients.pkl", 'rb'))
     fulling = []
     fulling.extend([', '.join(n) for n in fullnningredients])
 
-    recvect = pickle.load(open("../generated_data/tfidfvect_recipes.pkl", 'rb'))
-    recdoc = pickle.load(open("../generated_data/full_recipedoc.pkl", 'rb'))
-    recfeatures = pickle.load(open("../generated_data/features_recipes.pkl", 'rb'))
+    recvect = pickle.load(open(f"{GENDIR}/tfidfvect_recipes.pkl", 'rb'))
+    recdoc = pickle.load(open(f"{GENDIR}/full_recipedoc.pkl", 'rb'))
+    recfeatures = pickle.load(open(f"{GENDIR}/features_recipes.pkl", 'rb'))
 
     return w2vm, aisledict, noise, atFM, FMinfo, ingvect, ingfeatures, fulling, recvect, recfeatures, recdoc
 
 def request_comparison(userinput):
-    mykey = open('../spoonac/apikey.txt').read().strip()
+    mykey = open(f"{GENDIR}/apikey.txt").read().strip()
     params = {'url': userinput, 'forceExtraction': 'true', 'apiKey': mykey, 'analyze': 'true'}
     response = requests.get('https://api.spoonacular.com/recipes/extract', params=params)
     rec = response.json()

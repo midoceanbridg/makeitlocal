@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
-
 from . import localeats_twostage
 
 app = Flask(__name__, static_url_path='')
@@ -32,3 +31,6 @@ def index():
 class GetRecipeForm(FlaskForm):
     url = StringField('URL', validators=[DataRequired()])
     submit = SubmitField('Get Local!')
+
+if __name__ == "__main__":
+    app.run()
