@@ -3,7 +3,7 @@
 
 The aim of this project is to make it easier for users to do the majority of their shopping & meal planning via NYC farmers markets. 
 
-__You can view the website at www.makeitlocal.nyc__ 
+__You can view the website at www.thelocalhost.nyc__ 
 
 Users input a link to a recipe they want to make, and my code:
 *  Uses NLP tools to assess
