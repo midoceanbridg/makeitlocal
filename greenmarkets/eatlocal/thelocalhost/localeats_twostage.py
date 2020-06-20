@@ -29,7 +29,7 @@ def load_data():
     return w2vm, aisledict, noise, atFM, FMinfo, ingvect, ingfeatures, fulling, recvect, recfeatures, recdoc
 
 def request_comparison(userinput):
-    mykey = open(f"{GENDIR}/apikey.txt").read().strip()
+    mykey = open(f"{GENDIR}/spoonapikey.txt").read().strip()
     params = {'url': userinput, 'forceExtraction': 'true', 'apiKey': mykey, 'analyze': 'true'}
     response = requests.get('https://api.spoonacular.com/recipes/extract', params=params)
     rec = response.json()
