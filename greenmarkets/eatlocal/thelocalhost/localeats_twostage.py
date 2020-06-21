@@ -57,10 +57,16 @@ def request_comparison(userinput):
     ingredients = ','.join([ing['name'].lower() for ing in ingcomp if ing['name'] ])
     #error handling
     if '404' in rec['title']: #they don't return an actual 404 which is annoying
-        cur_rec = None
+            cur_rec = None
     else:
-        cur_rec = [rec['title'] + ' ' + ingredients + ' ' + rec['instructions']]
-
+        cur_rec = ''
+        if rec['title'] is not None:
+            cur_rec += rec['title']
+        cur_rec += ingredients
+        if rec['instructions'] is not None:
+            cur_rec += rec['instructions']
+        #cur_rec = [rec['title'] + ' ' + ingredients + ' ' + rec['instructions']]
+        cur_rec = [cur_rec]
     return ingredients, cur_rec
 
 def removenoise(ingredients, noise): 
