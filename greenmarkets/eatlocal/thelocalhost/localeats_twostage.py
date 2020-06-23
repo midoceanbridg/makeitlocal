@@ -5,9 +5,16 @@ from sklearn.metrics.pairwise import linear_kernel
 import numpy as np
 from fuzzywuzzy import fuzz, process
 from functools import lru_cache
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+import re
+from nltk.corpus import stopwords 
+import nltk
 import os
 
-GENDIR = os.environ['LH_GENDIR'] 
+GENDIR = os.environ['LH_GENDIR']
+with open(f'{GENDIR}/english') as fh:
+    STOP_WORDS = set(fh.read().split('\n'))
 
 
 def get_results(ingredients, cur_rec):
@@ -17,7 +24,10 @@ def get_results(ingredients, cur_rec):
     validationstep(allout, fulling, ingvect, ingfeatures, recvect, recfeatures, recdoc, cur_rec, FMinfo, wheretoshop)
     
     return allout, wheretoshop
+
 #function definiton block
+
+
 @lru_cache()
 def load_data():
     ''' Load previously generated data, all of this can be created via the other notebooks in this codebase
@@ -54,19 +64,20 @@ def request_comparison(userinput):
     #parsing output
     rec = response.json()
     ingcomp = rec['extendedIngredients']
-    ingredients = ','.join([ing['name'].lower() for ing in ingcomp if ing['name'] ])
+    ingredients = [lemmatizer.lemmatize(re.sub(r'[^a-z ]', '', ing['name'].lower().strip())) for ing in ingcomp if ing['name'] ]
+
     #error handling
     if '404' in rec['title']: #they don't return an actual 404 which is annoying
-            cur_rec = None
+        cur_rec = None
     else:
         cur_rec = ''
         if rec['title'] is not None:
             cur_rec += rec['title']
-        cur_rec += ingredients
+        cur_rec += ','.join(ingredients)
         if rec['instructions'] is not None:
             cur_rec += rec['instructions']
-        #cur_rec = [rec['title'] + ' ' + ingredients + ' ' + rec['instructions']]
         cur_rec = [cur_rec]
+    
     return ingredients, cur_rec
 
 def removenoise(ingredients, noise): 
@@ -75,14 +86,34 @@ def removenoise(ingredients, noise):
     returns the cleaned ingredient string
     
     '''
+  
+    assert type(ingredients) == list, type(ingredients)
     noise_free_ing = []
-    for word in ingredients.split(','):
+    for word in ingredients:
         checked = []
         splitit = word.split()
-        checked.extend(i for i in splitit if i not in noise)
-        noise_free_ing.append(' '.join(checked))
-
+        for it in splitit:
+            if it not in noise and it not in STOP_WORDS:
+                tag = nltk.pos_tag([it])
+                if tag[0][1] in ['JJ', 'NN', 'NNP', 'VBN']: #check if it is a adj, noun, proper noun
+                    checked.append(it)
+                  
+                elif tag[0][1] in ['JJR', 'JJS', 'NNS', 'NNPS']: # check if adj, noun, propr noun, but comparitive or plural
+                    checked.append(lemmatizer.lemmatize(it)) #lemmatize these words
+                    
+        if len(checked) > 0:
+            noise_free_ing.append(' '.join(list(filter(None, checked))))
     return noise_free_ing
+    
+    
+    #     noise_free_ing = []
+#     for word in ingredients.split(','):
+#         checked = []
+#         splitit = word.split()
+#         checked.extend(i for i in splitit if i not in noise)
+#         noise_free_ing.append(' '.join(checked))
+
+#     return noise_free_ing
 
 def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
     '''Goes through ingredients, assesses the similarity of them
@@ -113,9 +144,6 @@ def rulesofsimilarity(noise_free_ing, w2vm, aisledict, atFM, FMinfo):
     allout = []
 
     for i in noise_free_ing:
-        
-        
-        
         
         thisout = output.copy()
         thisout['ingredient'] = i
@@ -206,7 +234,6 @@ def validationstep(allout, fulling, ingvect, ingfeatures, recvect, recfeatures, 
                 out['cos_sim'] = 0
         
             
-        
 # Helper functions!
 
 def handle_atFM(highest, FMinfo, thisout, wheretoshop):
@@ -355,4 +382,5 @@ def handle_toaisles(aisle_grabbedfromdict):
     else:
         matchedaisles = None
     return matchedaisles
+        
         
