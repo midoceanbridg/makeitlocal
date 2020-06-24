@@ -9,13 +9,13 @@
 </p>
  {% for out in allout %}
  <p>
-{% if out['where_available'] is none and out['cos_sim'] is not none and out['cos_sim'] >= 0.37 %}
+{% if out['where_available'] is none and out['cos_sim'] is not none and out['cos_sim'] >= 0.2 %}
   The farmers market does not have <b> {{out['ingredient']}} </b>
   but our algorithm thinks <b> {{out['match'][0]}} </b> is a solid replacement.
    <br/>
 {% endif %}
 
-{% if out['where_available'] is none and out['cos_sim'] is not none and out['cos_sim'] < 0.37 and out['cos_sim'] > 0 %}
+{% if out['where_available'] is none and out['cos_sim'] is not none and out['cos_sim'] < 0.2 and out['cos_sim'] > 0 %}
    The farmers market does not have <b> {{out['ingredient']}} </b>
    but our algorithm thinks <b> {{out['match'][0]}} </b>  is the closest ingredient available. 
    <i> However </i> we are smart enough to tell that is not a great replacement,
@@ -44,9 +44,15 @@ Try at <i> {{out['spice_businesses'][0]}} </i>
 {% if out['try_fresh'] %}
 It looks like  <b> {{out['ingredient']}} </b>  is usually pre-packaged, but it might be able to be made from scratch with
 farmers market ingredients! Try looking it up online, or ask at the produce stand!
- <br/>
-</p>
+<br/>
 {% endif %}
+
+{% if out['unknown'] %}
+The ingredient <b> {{out['ingredient']}} </b> is new to us so we can't provide much guidance at this point...sorry! We are getting smarter all the time!
+<br/>
+{% endif %}
+
+</p>
 {% endfor %}
 {% endif %}
 

@@ -1,0 +1,26 @@
+{% extends 'base.html.j2' %}
+
+
+{% block linkit %}
+{% endblock linkit %}
+
+{% block main %}
+<p>
+<b> Welcome to The Local Host! </b>
+<br>
+<i> Your favorite food, but make it local! </i>
+<br> <br>
+
+This website aims to make it easier to 
+recreate your favorite meal using only ingredients found at the Union Square Farmers Market.
+I use publically available GrowNYC data to assess what is available at
+the market, and for ingredients that are unavailable I use machine learning techniques
+to assess what the most similar locally available ingredient would be. When I cannot
+find anything similar, I provide back up recommendation for what to do. 
+<br> <br>
+<i> The Local Host is not affiliated with GrowNYC nor the farmers market in any way, just 
+passionate about eating locally. </i>
+
+</p>
+{% endblock main %}
+

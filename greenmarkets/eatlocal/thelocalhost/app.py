@@ -25,7 +25,9 @@ def index():
     else:
         return render_template("indexmountain.html.j2", form=form, allout=allout, wheretoshop=wheretoshop) 
 
-
+@app.route('/about')
+def about():
+    return render_template("aboutTLH.html.j2")
 
 class GetRecipeForm(FlaskForm):
     url = StringField('URL', validators=[DataRequired()])

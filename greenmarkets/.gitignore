@@ -1,4 +1,7 @@
-../get_farmersdata.ipynb
+tmp/
+eatlocal/create_manualvalid.ipynb
+production_notebook.ipynb
+get_farmersdata.ipynb
 test_data/
 science.py
 Untitled.ipynb
