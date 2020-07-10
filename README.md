@@ -20,7 +20,7 @@ Inside greenmarkets/ you will find the following files:
   * You will need your own Spoonacular API key to run this file
 * __1_cleandata.ipynb__ takes the data generated from the above notebooks and puts them into useful formats for analysis
 * __2_ModelingW2V.ipynb__ runs Word2Vec model on ingredient data generated above
-* __2_ModelingW2V.ipynb__ runs TFIDF and Cosine Similarity for validation 
+* __2_ModelingCosSimTFIDF.ipynb__ runs TF-IDF and Cosine Similarity for validation 
 * __3_validation_analysis.ipynb__ shows validation results from user test
 
 
