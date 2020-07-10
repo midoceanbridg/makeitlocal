@@ -7,7 +7,7 @@ __You can view the website at www.thelocalhost.nyc__
 
 Users input a link to a recipe they want to make, and my code:
 *  Uses filtering to assess if the ingredient is available locally
-* If not locall available, uses combined word2vec output and a dictionary of aisle information to replace it with a suitable local substitute
+* If not locally available, uses combined word2vec output and a dictionary of aisle information to replace it with a suitable local substitute
 * Validates the appropriateness of the substitution using cosine similarity of full input recipe vs a recipe using the replacement ingredients
 * Provides a farmers market specific grocery list.
 
