@@ -95,18 +95,18 @@ The ingredient <b> {{out['ingredient']}} </b> is new to us so we can't provide m
 
 
 {# 
-  {% if out['where_available'] is none and out['cos_sim'] >= 0.37 %}
+  {% if out['where_available'] is none and out['cos_sim'] >= 0.2 %}
    The farmers market doesnt have <b> {{out["ingredient"]}} </b>, but our algorithm thinks <b> {{out["match"][0]}} </b> is a solid replacement!
    {% endif %}
    
-   {% if out['where_available'] is none and out['cos_sim'] < 0.37 and out['similar_vendor'] is not none %}
+   {% if out['where_available'] is none and out['cos_sim'] < 0.2 and out['similar_vendor'] is not none %}
       The farmers market doesnt have <b> {{out["ingredient"]}}</b>, but our algorithm thinks <b> {{out["match"][0]}}</b> is the closest ingredient available.
        <br/>
        <i>However </i>, we are smart enough to tell that is not a great replacement, so you can also try asking at these
           stores, who often have items similar to <b> {{out["ingredient"]}} </b>: <i>{{', '.join(out["similar_vendor"][0])}}</i>
    {% endif %}
 
-   {% if out['where_available'] is none and out['cos_sim'] < 0.37 and out['similar_vendor'] is none %}
+   {% if out['where_available'] is none and out['cos_sim'] < 0.2 and out['similar_vendor'] is none %}
    The farmers market doesnt have <b> {{out["ingredient"]}} </b>, but our algorithm thinks <b> {{out["match"][0]}} </b> is the closest ingredient available.
    <br/>
    <i> However </i>, we are smart enough to tell that is not a great replacement... I hate to say it, but <b> {{out["ingredient"]}} </b> might require a trip to a traditional grocery store.

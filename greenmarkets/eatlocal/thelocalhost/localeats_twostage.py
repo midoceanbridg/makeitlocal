@@ -227,7 +227,7 @@ def validationstep(allout, fulling, ingvect, ingfeatures, recvect, recfeatures, 
         for out in allout:
             if out['ingredient'] == rem:
                 out['cos_sim'] = recipe_similarity
-                if recipe_similarity < 0.37:
+                if recipe_similarity < 0.2:
                     aisle = out['aisle']
                     handle_notvalid(out, FMinfo, aisle, wheretoshop)
             if out['match'] is not None and 'No Match' in out['match']:
