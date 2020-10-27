@@ -21,7 +21,7 @@ cffi==1.14.0
 chardet==3.0.4
 click==7.1.2
 cloudpickle @ file:///home/conda/feedstock_root/build_artifacts/cloudpickle_1588164361239/work
-cryptography==2.9.2
+cryptography==3.2
 cycler==0.10.0
 Cython==0.29.17
 cytoolz==0.10.1
