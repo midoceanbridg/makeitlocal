@@ -101,7 +101,7 @@ ptyprocess==0.6.0
 pycocotools==2.0.0
 pycparser==2.20
 pydeck==0.4.0b2
-Pygments==2.6.1
+Pygments==2.7.4
 pylint @ file:///Users/runner/miniforge3/conda-bld/pylint_1588950503943/work
 pyOpenSSL==19.1.0
 pyparsing==2.4.7
